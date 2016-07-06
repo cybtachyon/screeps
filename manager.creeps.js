@@ -2,30 +2,31 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
-var roles = {
-  harvester: {
+var roles = [
+  {
     name: 'harvester',
     class: roleHarvester,
     roomLimit: 3
   },
-  upgrader: {
+  {
     name: 'upgrader',
     class: roleUpgrader,
     roomLimit: 2
   },
-  builder: {
+  {
     name: 'builder',
     class: roleBuilder,
     roomLimit: 1
   }
-};
+];
 
 var creepsManager = {
 
   /** @param {Array.<Creep>} creeps **/
   run: function (creeps) {
 
-    for (var role in roles) {
+    for (var roleId in roles) {
+      var role = roles[roleId];
       // Ensure enough creeps are spawned.
       var roleCreeps = _.filter(creeps, (creep) => creep.memory.role == role.name);
       if (roleCreeps.length < role.roomLimit) {
@@ -36,7 +37,7 @@ var creepsManager = {
 
       // Run the roles for each creep.
       for (var creep in roleCreeps) {
-        role.class.run(creep);
+        role.class.run(roleCreeps[creep]);
       }
     }
   }
