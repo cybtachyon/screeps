@@ -31,7 +31,8 @@ var roleBuilder = {
       );
       if (sources.length > 0) {
         var transfer = null;
-        if (sources[0].structureType == STRUCTURE_SPAWN) {
+        if (sources[0].structureType == STRUCTURE_SPAWN ||
+          sources[0].structureType == STRUCTURE_EXTENSION) {
           transfer = sources[0].transferEnergy(creep, creep.carryCapacity - creep.carry.energy);
         }
         else {
