@@ -26,7 +26,7 @@ var roleUpgrader = {
           }
         }
       );
-      if (sources) {
+      if (sources.length > 0) {
         var transfer = null;
         if (sources[0].structureType == STRUCTURE_SPAWN) {
           transfer = sources[0].transferEnergy(creep, creep.carryCapacity - creep.carry.energy);
