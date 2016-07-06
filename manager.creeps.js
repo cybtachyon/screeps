@@ -25,8 +25,8 @@ var creepsManager = {
   /** @param {Array.<Creep>} creeps **/
   run: function (creeps) {
 
-    for (var roleId in roles) {
-      var role = roles[roleId];
+    for (var roleDelta = 0; roleDelta < roles.length; roleDelta++) {
+      var role = roles[roleDelta];
       // Ensure enough creeps are spawned.
       var roleCreeps = _.filter(creeps, (creep) => creep.memory.role == role.name);
       if (roleCreeps.length < role.roomLimit) {
@@ -36,8 +36,8 @@ var creepsManager = {
       }
 
       // Run the roles for each creep.
-      for (var creep in roleCreeps) {
-        role.class.run(roleCreeps[creep]);
+      for (var creepDelta = 0; creepDelta < roleCreeps.length; creepDelta++) {
+        role.class.run(roleCreeps[creepDelta]);
       }
     }
   }
