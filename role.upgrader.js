@@ -16,9 +16,27 @@ var roleUpgrader = {
       }
     }
     else {
-      var sources = creep.room.find(FIND_SOURCES);
-      if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(sources[0]);
+      var sources = creep.room.find(
+        FIND_MY_STRUCTURES,
+        {
+          filter: (structure) => {
+            return (structure.structureType == STRUCTURE_EXTENSION ||
+              structure.structureType == STRUCTURE_SPAWN)
+              && structure.energy > creep.carryCapacity;
+          }
+        }
+      );
+      if (sources) {
+        var transfer = null;
+        if (sources[0].structureType == STRUCTURE_SPAWN) {
+          transfer = sources[0].transferEnergy(creep, creep.carryCapacity - creep.carry.energy);
+        }
+        else {
+          transfer = sources[0].transfer(creep, 'energy', creep.carryCapacity - creep.carry.energy)
+        }
+        if (transfer == ERR_NOT_IN_RANGE) {
+          creep.moveTo(sources[0]);
+        }
       }
     }
   }
