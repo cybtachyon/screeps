@@ -20,6 +20,8 @@ var roles = [
   }
 ];
 
+// @TODO Make harvesting a priority for now.
+
 var creepsManager = {
 
   /** @param {Array.<Creep>} creeps **/
@@ -33,6 +35,9 @@ var creepsManager = {
       // This mostly handles new rooms & spawns.
       // @TODO Revisit for rooms with no harvesting nodes.
       if (role.name == 'harvester' && roleCreeps.length < 1) {
+        if (!Game.spawns.Spawn1.spawning && Game.spawns.Spawn1.canCreateCreep([WORK, CARRY, MOVE]) == OK) {
+          Game.spawns.Spawn1.createCreep([WORK, CARRY, MOVE], undefined, {role: role.name});
+        }
         return;
       }
       if (roleCreeps.length < role.roomLimit) {

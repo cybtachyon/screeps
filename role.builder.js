@@ -29,6 +29,7 @@ var roleBuilder = {
           }
         }
       );
+      // @TODO Make transferring a request so it can be denied if saving.
       if (sources.length > 0) {
         var transfer = null;
         if (sources[0].structureType == STRUCTURE_SPAWN ||
