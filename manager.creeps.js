@@ -6,17 +6,20 @@ var roles = [
   {
     name: 'harvester',
     class: roleHarvester,
-    roomLimit: 3
+    roomLimit: 3,
+    bodyParts: [WORK, CARRY, MOVE]
   },
   {
     name: 'upgrader',
     class: roleUpgrader,
-    roomLimit: 2
+    roomLimit: 2,
+    bodyParts: [WORK, CARRY, MOVE]
   },
   {
     name: 'builder',
     class: roleBuilder,
-    roomLimit: 1
+    roomLimit: 1,
+    bodyParts: [WORK, CARRY, MOVE]
   }
 ];
 

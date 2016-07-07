@@ -1,8 +1,17 @@
+var energyManager = require('manager.energy');
+
 var roleHarvester = {
 
   /** @param {Creep} creep **/
   run: function (creep) {
-    if (creep.carry.energy < creep.carryCapacity) {
+    var state = creep.memory.state;
+    if (!state) {
+      state = STATE_HARVESTING;
+    }
+    else if (creep.carry.energy == 0) {
+      state = STATE_HARVESTING;
+    }
+    else if (state == STATE_HARVESTING && creep.carry.energy < creep.carryCapacity) {
       var source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
       if(source) {
         if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
@@ -11,20 +20,15 @@ var roleHarvester = {
       }
     }
     else {
-      var targets = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-          return (structure.structureType == STRUCTURE_EXTENSION ||
-            structure.structureType == STRUCTURE_SPAWN ||
-            structure.structureType == STRUCTURE_TOWER)
-            && structure.energy < structure.energyCapacity;
-        }
-      });
-      if (targets.length > 0) {
-        if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(targets[0]);
+      state = STATE_TRANSPORTING;
+      var target = energyManager.getOpenStorage(creep.room);
+      if (target) {
+        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(target);
         }
       }
     }
+    creep.memory.state = state;
   }
 };
 

@@ -1,3 +1,5 @@
+module.exports.states = require('states');
+var energyManager = require('manager.energy');
 var creepsManager = require('manager.creeps');
 
 module.exports.loop = function () {
