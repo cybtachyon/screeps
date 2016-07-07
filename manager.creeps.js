@@ -1,34 +1,43 @@
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
+var states = require('constants.states');
 
+var roleBuilder = require('role.builder');
+var roleHarvester = require('role.harvester');
+var roleRenewer = require('role.renewer');
+var roleUpgrader = require('role.upgrader');
+
+// @TODO: For now these are in role of priority.
+// Need to do some sorting or something to handle this.
 var roles = [
   {
     name: 'harvester',
     class: roleHarvester,
-    roomLimit: 3,
     bodyParts: [WORK, CARRY, MOVE]
   },
   {
     name: 'upgrader',
     class: roleUpgrader,
-    roomLimit: 2,
     bodyParts: [WORK, CARRY, MOVE]
   },
   {
     name: 'builder',
     class: roleBuilder,
-    roomLimit: 1,
     bodyParts: [WORK, CARRY, MOVE]
+  },
+  {
+    name: 'renewer',
+    class: roleRenewer,
+    bodyParts: []
   }
 ];
-
-// @TODO Make harvesting a priority for now.
 
 var creepsManager = {
 
   /** @param {Array.<Creep>} creeps **/
   run: function (creeps) {
+    var room = Game.spawns.Spawn1.room;
+    if (!Game.spawns.Spawn1.memory.idleCreeps) {
+      Game.spawns.Spawn1.memory.idleCreeps = {};
+    }
 
     for (var roleDelta = 0; roleDelta < roles.length; roleDelta++) {
       var role = roles[roleDelta];
@@ -38,22 +47,72 @@ var creepsManager = {
       // This mostly handles new rooms & spawns.
       // @TODO Revisit for rooms with no harvesting nodes.
       if (role.name == 'harvester' && roleCreeps.length < 1) {
-        if (!Game.spawns.Spawn1.spawning && Game.spawns.Spawn1.canCreateCreep([WORK, CARRY, MOVE]) == OK) {
-          Game.spawns.Spawn1.createCreep([WORK, CARRY, MOVE], undefined, {role: role.name});
-        }
+        console.log('Emergency: no harvesters available in room.');
+        this.makeCreepRole(role);
         return;
       }
-      if (roleCreeps.length < role.roomLimit) {
-        if (!Game.spawns.Spawn1.spawning && Game.spawns.Spawn1.canCreateCreep([WORK, CARRY, MOVE]) == OK) {
-          Game.spawns.Spawn1.createCreep([WORK, CARRY, MOVE], undefined, {role: role.name});
-        }
+      // Create new creeps if roles are not filled.
+      if (roleCreeps.length < role.class.getRoomLimit(room)) {
+        this.makeCreepRole(role);
       }
 
       // Run the roles for each creep.
       for (var creepDelta = 0; creepDelta < roleCreeps.length; creepDelta++) {
-        role.class.run(roleCreeps[creepDelta]);
+        var creep = roleCreeps[creepDelta];
+        if (creep.ticksToLive < 50 && creep.memory.role != 'renewer') {
+          creep.memory.role = 'renewer';
+          console.log('Creep ' + creep.name + ' needs to be renewed.');
+          continue;
+        }
+        role.class.run(creep);
+        if (creep.memory.state == states.STATE_IDLE) {
+          if (!creep.memory.idleTime) {
+            creep.memory.idleTime = 0;
+          }
+          creep.memory.idleTime++;
+          if (creep.memory.idleTime >= 15) {
+            Game.spawns.Spawn1.memory.idleCreeps[creep.name] = 0;
+          }
+        }
+        else {
+          creep.memory.idleTime = 0;
+          delete Game.spawns.Spawn1.memory.idleCreeps[creep.name];
+        }
       }
     }
+  },
+
+  /** @param {Object} role **/
+  createCreep: function(role) {
+    if (!Game.spawns.Spawn1.spawning && Game.spawns.Spawn1.canCreateCreep(role.bodyParts) == OK) {
+      console.log('Creating new ' + role.name);
+      return Game.spawns.Spawn1.createCreep(role.bodyParts, undefined, {role: role.name, state: states.STATE_IDLE});
+    }
+    else {
+      return false;
+    }
+  },
+
+  /** @param {Object} role **/
+  makeCreepRole: function(role) {
+    var idleCreeps = Game.spawns.Spawn1.memory.idleCreeps;
+    for (var delta = 0; delta < Object.keys(idleCreeps).length; delta++) {
+      var creepName = Object.keys(idleCreeps)[delta];
+      var creep = Game.creeps[creepName];
+      if (!creep) {
+        delete idleCreeps[creepName];
+        continue;
+      }
+      if (_.difference(role.bodyParts, creep.bodyParts).length) {
+        creep.memory.role = role.name;
+        delete idleCreeps[creepName];
+        console.log('Assigning ' + creepName + ' to role ' + role.name);
+        Game.spawns.Spawn1.memory.idleCreeps = idleCreeps;
+        return creep;
+      }
+    }
+    Game.spawns.Spawn1.memory.idleCreeps = idleCreeps;
+    return this.createCreep(role);
   }
 };
 

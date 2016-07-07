@@ -1,16 +1,31 @@
+var states = require('constants.states');
+
 var roleUpgrader = {
+  /** @param {Room} room **/
+  getRoomLimit: function (room) {
+    if (room.energyAvailable < 50) {
+      return 0;
+    }
+    else {
+      // @TODO: Something less stupid about idlers.
+      var idleCreepCount = Object.keys(Game.spawns.Spawn1.memory.idleCreeps).length;
+      var roleCreeps = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+      var numUpgraders = roleCreeps.length + 1;
+      return Math.round((room.energyAvailable + 1) / (50 * numUpgraders)) + idleCreepCount;
+    }
+  },
 
   /** @param {Creep} creep **/
   run: function (creep) {
 
-    if (creep.memory.upgrading && creep.carry.energy == 0) {
-      creep.memory.upgrading = false;
+    if (creep.memory.state == states.STATE_UPGRADING && creep.carry.energy < 1) {
+      creep.memory.state = states.STATE_IDLE;
     }
-    if (!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
-      creep.memory.upgrading = true;
+    if (creep.memory.state != states.STATE_UPGRADING && creep.carry.energy == creep.carryCapacity) {
+      creep.memory.state = states.STATE_UPGRADING;
     }
 
-    if (creep.memory.upgrading) {
+    if (creep.memory.state == states.STATE_UPGRADING) {
       if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
         creep.moveTo(creep.room.controller);
       }
@@ -39,6 +54,10 @@ var roleUpgrader = {
         if (transfer == ERR_NOT_IN_RANGE) {
           creep.moveTo(sources[0]);
         }
+        creep.memory.state = states.STATE_TRANSPORTING;
+      }
+      else {
+        creep.memory.state = states.STATE_IDLE;
       }
     }
   }
