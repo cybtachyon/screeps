@@ -12,12 +12,15 @@ var towersManager = {
       for (var towerDelta = 0; towerDelta < towers.length; towerDelta++) {
         var tower = towers[towerDelta];
         if (tower) {
-          var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
-          });
-          if (closestDamagedStructure) {
-            var action = tower.repair(closestDamagedStructure);
-            console.log('Tower ' + tower.id + ' is repairing ' + closestDamagedStructure + ': ' + action);
+
+          if (tower.energy > 100) {
+            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+              filter: (structure) => structure.hits < structure.hitsMax
+            });
+            if (closestDamagedStructure) {
+              var action = tower.repair(closestDamagedStructure);
+              console.log('Tower ' + tower.id + ' is repairing ' + closestDamagedStructure + ': ' + action);
+            }
           }
 
           var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
