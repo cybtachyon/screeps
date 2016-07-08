@@ -8,12 +8,18 @@ var energyManager = {
     ];
   },
 
+  requestEnergy: function(creep) {
+
+  },
+
   /** @param {Room} room **/
   getOpenStorage: function(room) {
     var storagePriorities = this.getStoragePriorities();
-    var myStructures = room.find(FIND_MY_STRUCTURES);
+    var structures = room.find(FIND_STRUCTURES);
     for (var storageDelta = 0; storageDelta < storagePriorities.length; storageDelta++) {
-      var storageStructures = _.filter(myStructures, (structure) => structure.structureType == storagePriorities[storageDelta]);
+      var storageStructures = _.filter(structures,
+        (structure) => structure.structureType == storagePriorities[storageDelta]
+      );
       for (var structureDelta = 0; structureDelta < storageStructures.length; structureDelta++) {
         var structure = storageStructures[structureDelta];
         if (structure.energy < structure.energyCapacity) {
@@ -26,12 +32,21 @@ var energyManager = {
   /** @param {Room} room **/
   getPickupStorage: function(room) {
     var storagePriorities = this.getStoragePriorities().reverse();
-    var myStructures = room.find(FIND_MY_STRUCTURES);
+    var structures = room.find(FIND_STRUCTURES);
     for (var storageDelta = 0; storageDelta < storagePriorities.length; storageDelta++) {
-      var storageStructures = _.filter(myStructures, (structure) => structure.structureType == storagePriorities[storageDelta]);
+      var storageStructures = _.filter(structures,
+        (structure) => structure.structureType == storagePriorities[storageDelta]
+      );
       for (var structureDelta = 0; structureDelta < storageStructures.length; structureDelta++) {
         var structure = storageStructures[structureDelta];
-        if (structure.energy > 0) {
+        var energy = 0;
+        if (structure.store) {
+          energy = structure.store[RESOURCE_ENERGY];
+        }
+        else {
+          energy = structure.energy;
+        }
+        if (energy > 0) {
           return structure;
         }
       }

@@ -2,6 +2,8 @@ var states = require('constants.states');
 
 var roleBuilder = require('role.builder');
 var roleHarvester = require('role.harvester');
+var roleHauler = require('role.hauler');
+var roleRecycler = require('role.recycler');
 var roleRenewer = require('role.renewer');
 var roleUpgrader = require('role.upgrader');
 
@@ -24,8 +26,18 @@ var roles = [
     bodyParts: [WORK, CARRY, MOVE]
   },
   {
+    name: 'hauler',
+    class: roleHauler,
+    bodyParts: [WORK, CARRY, MOVE]
+  },
+  {
     name: 'renewer',
     class: roleRenewer,
+    bodyParts: []
+  },
+  {
+    name: 'recycler',
+    class: roleRecycler,
     bodyParts: []
   }
 ];
@@ -72,6 +84,9 @@ var creepsManager = {
           creep.memory.idleTime++;
           if (creep.memory.idleTime >= 15) {
             Game.spawns.Spawn1.memory.idleCreeps[creep.name] = 0;
+            if (creep.memory.idleTime > 300) {
+              creep.memory.role = 'recycler';
+            }
           }
         }
         else {
