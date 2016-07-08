@@ -31,10 +31,10 @@ var roleHauler = {
         if (target instanceof Resource) {
           transfer = creep.pickup(target);
         }
-        else if (target.hasOwnProperty('transferEnergy')) {
+        else if (typeof target.transferEnergy === 'function') {
           transfer = target.transferEnergy(creep);
         }
-        else if (target.hasOwnProperty('transfer')) {
+        else if (typeof target.transfer === 'function') {
           transfer = target.transfer(creep, RESOURCE_ENERGY);
         }
         else {
@@ -78,6 +78,7 @@ var roleHauler = {
         break;
         
       default:
+        creep.memory.target = null;
         var droppedEnergy = creep.room.find(FIND_DROPPED_ENERGY);
         if (droppedEnergy.length) {
           console.log('Hauler' + creep.name + ' found energy ' + droppedEnergy[0].id);
@@ -86,7 +87,7 @@ var roleHauler = {
           return;
         }
         var source = energyManager.getPickupStorage(room);
-        if (source && source.structureType != STRUCTURE_SPAWN) {
+        if (source && !_.difference(source.structureType, [STRUCTURE_SPAWN, STRUCTURE_EXTENSION]).length) {
           console.log('Hauler ' + creep.name + ' found source ' + source.structureType);
           creep.memory.target = source.id;
           creep.memory.state = states.STATE_LOADING;
