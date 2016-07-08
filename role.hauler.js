@@ -19,7 +19,7 @@ var roleHauler = {
     var state = creep.memory.state;
     var room = creep.room;
     var target = Game.getObjectById(creep.memory.target);
-    var transfer = OK;
+    var transfer = '';
 
     switch (state) {
       case states.STATE_LOADING:
@@ -33,8 +33,11 @@ var roleHauler = {
         else if (target.hasOwnProperty('transferEnergy')) {
           transfer = target.transferEnergy(creep);
         }
-        else {
+        else if (target.hasOwnProperty('transfer')) {
           transfer = target.transfer(creep, RESOURCE_ENERGY);
+        }
+        else {
+          console.log('Error: Unable to transfer energy from a ' + target.constructor.name);
         }
         if (transfer == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
