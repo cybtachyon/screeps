@@ -27,6 +27,7 @@ var roleHauler = {
           creep.memory.state = states.STATE_IDLE;
           return;
         }
+        // Attempt transfer.
         if (target instanceof Resource) {
           transfer = creep.pickup(target);
         }
@@ -39,6 +40,14 @@ var roleHauler = {
         else {
           console.log('Error: Unable to transfer energy from a ' + target.constructor.name);
         }
+        // Find out remaining energy.
+        var remainingEnergy = 0;
+        if (target.hasOwnProperty('energy')) {
+          remainingEnergy = target.energy;
+        } else if (target.hasOwnProperty('store')) {
+          remainingEnergy = target.store[RESOURCE_ENERGY];
+        }
+        // Handle transfer progress.
         if (transfer == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
           return;
@@ -47,7 +56,7 @@ var roleHauler = {
           this.startUnloading(creep);
           return;
         }
-        else if (transfer != OK) {
+        else if (transfer != OK || remainingEnergy == 0) {
           creep.memory.state = states.STATE_IDLE;
           return;
         }
