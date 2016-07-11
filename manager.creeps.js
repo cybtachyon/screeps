@@ -5,6 +5,7 @@ var roleHarvester = require('role.harvester');
 var roleHauler = require('role.hauler');
 var roleRecycler = require('role.recycler');
 var roleRenewer = require('role.renewer');
+var roleTanker = require('role.tanker');
 var roleUpgrader = require('role.upgrader');
 
 // @TODO: For now these are in role of priority.
@@ -28,6 +29,11 @@ var roles = [
   {
     name: 'hauler',
     class: roleHauler,
+    bodyParts: [WORK, CARRY, MOVE]
+  },
+  {
+    name: 'tanker',
+    class: roleTanker,
     bodyParts: [WORK, CARRY, MOVE]
   },
   {
