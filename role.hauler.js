@@ -4,7 +4,26 @@ var energyManager = require('manager.energy');
 var roleHauler = {
   /** @param {Room} room **/
   getRoomLimit: function (room) {
-    return 1;
+    if(this.getSource(room)) {
+      return 1;
+    }
+    return 0;
+  },
+
+  getSource: function(room) {
+    var droppedEnergy = room.find(FIND_DROPPED_ENERGY);
+    if (droppedEnergy.length) {
+      return droppedEnergy[0];
+    }
+    var source = energyManager.getPickupStorage(room);
+    var spawn_system = _.difference(
+        [source.structureType],
+        [STRUCTURE_SPAWN, STRUCTURE_EXTENSION]
+      ).length == 0;
+    if (source && !spawn_system) {
+      return source;
+    }
+    return null;
   },
 
   /** @param {Creep} creep **/
@@ -17,7 +36,6 @@ var roleHauler = {
   /** @param {Creep} creep **/
   run: function (creep) {
     var state = creep.memory.state;
-    var room = creep.room;
     var target = Game.getObjectById(creep.memory.target);
     var transfer = '';
 
@@ -38,7 +56,7 @@ var roleHauler = {
           transfer = target.transfer(creep, RESOURCE_ENERGY);
         }
         else {
-          console.log('Error: Unable to transfer energy from a ' + target.constructor.name);
+          console.log('Error: Unable to transfer energy from a ' + target);
         }
         // Find out remaining energy.
         var remainingEnergy = 0;
@@ -81,20 +99,9 @@ var roleHauler = {
         
       default:
         creep.memory.target = null;
-        var droppedEnergy = creep.room.find(FIND_DROPPED_ENERGY);
-        if (droppedEnergy.length) {
-          console.log('Hauler' + creep.name + ' found energy ' + droppedEnergy[0].id);
-          creep.memory.target = droppedEnergy[0].id;
-          creep.memory.state = states.STATE_LOADING;
-          return;
-        }
-        var source = energyManager.getPickupStorage(room);
-        var spawn_system = _.difference(
-            [source.structureType],
-            [STRUCTURE_SPAWN, STRUCTURE_EXTENSION]
-          ).length == 0;
-        if (source && !spawn_system) {
-          console.log('Hauler ' + creep.name + ' found source ' + source.structureType);
+        var source = this.getSource(creep.room);
+        if (source) {
+          console.log('Hauler ' + creep.name + ' found source ' + source);
           creep.memory.target = source.id;
           creep.memory.state = states.STATE_LOADING;
         }
