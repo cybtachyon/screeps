@@ -40,7 +40,9 @@ var roleBuilder = {
           }
           else if (build_status != OK) {
             console.log('Build error: ' + build_status);
-            creep.memory.state = states.STATE_IDLE;
+            if (creep.dismantle(target) != OK) {
+              creep.memory.state = states.STATE_IDLE;
+            }
             break;
           }
         }
