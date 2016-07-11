@@ -17,6 +17,41 @@ var energyManager = {
     });
   },
 
+  transferEnergy: function(source, destination, amount) {
+    if (typeof source.transferEnergy === 'function') {
+      return source.transferEnergy(destination);
+    }
+    else if (typeof source.transfer === 'function') {
+      return source.transfer(destination, RESOURCE_ENERGY);
+    }
+    else {
+      console.log('Error: Unable to transfer energy from ' + source + ' to ' + destination);
+      return ERR_INVALID_TARGET;
+    }
+  },
+
+  /**
+   * Returns the energy count inside the target.
+   *
+   * @param {Object} target
+   *   The target to get the energy amount from.
+   *
+   * @return int
+   *   Energy amount.
+   */
+  getEnergy: function(target) {
+    if (target.hasOwnProperty('energy')) {
+      return target.energy;
+    }
+    else if (target.hasOwnProperty('store')) {
+      return target.store[RESOURCE_ENERGY];
+    }
+    else if (target.hasOwnProperty('carry')) {
+      return target.carry[RESOURCE_ENERGY];
+    }
+    return 0;
+  },
+  
   /** @param {Room} room **/
   getOpenStorage: function(room) {
     var storagePriorities = this.getStoragePriorities();
