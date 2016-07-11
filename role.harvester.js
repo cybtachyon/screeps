@@ -4,7 +4,11 @@ var energyManager = require('manager.energy');
 var roleHarvester = {
   /** @param {Room} room **/
   getRoomLimit: function (room) {
-    return 3;
+    var sources = room.find(FIND_SOURCES_ACTIVE);
+    if (sources.length) {
+      return sources[0].getOpenTerrainCount();
+    }
+    return 0;
   },
 
   /** @param {Creep} creep **/
