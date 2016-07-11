@@ -1,11 +1,11 @@
 var towersManager = {
   run: function () {
 
-    for (var roomName in Game.rooms) {
-      if (!Game.rooms.hasOwnProperty(roomName) || !Game.rooms[roomName] instanceof Room) {
+    for (var room_name in Game.rooms) {
+      if (!Game.rooms.hasOwnProperty(room_name) || !Game.rooms[room_name] instanceof Room) {
         continue;
       }
-      var room = Game.rooms[roomName];
+      var room = Game.rooms[room_name];
       var towers = room.find(FIND_MY_STRUCTURES, {
         filter: (structure) => structure.structureType == STRUCTURE_TOWER
       });
@@ -14,7 +14,7 @@ var towersManager = {
         if (tower) {
 
           if (tower.energy > 100) {
-            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_MY_STRUCTURES, {
               filter: (structure) => structure.hits < structure.hitsMax
             });
             if (closestDamagedStructure) {
