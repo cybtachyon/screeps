@@ -1,4 +1,19 @@
 var towersManager = {
+  getLowEnergyTowers: function() {
+    var towers = [];
+    for (var room_name in Game.rooms) {
+      if (!Game.rooms.hasOwnProperty(room_name) || !Game.rooms[room_name] instanceof Room) {
+        continue;
+      }
+      var room = Game.rooms[room_name];
+      towers = towers.concat(room.find(FIND_MY_STRUCTURES, {
+        filter: (structure) => structure.structureType == STRUCTURE_TOWER
+          && structure.energy < structure.energyCapacity * 0.2
+      }));
+    }
+    return towers;
+  },
+
   run: function () {
 
     for (var room_name in Game.rooms) {
