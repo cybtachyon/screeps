@@ -1,4 +1,5 @@
 require('Creep');
+require('RoomPosition');
 
 var creepsManager = require('manager.creeps');
 var towersManager = require('manager.towers');
