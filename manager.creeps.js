@@ -115,18 +115,18 @@ var creepsManager = {
       var creepName = Object.keys(idleCreeps)[delta];
       var creep = Game.creeps[creepName];
       if (!creep) {
-        delete idleCreeps[creepName];
+        delete Game.spawns.Spawn1.memory.idleCreeps[creepName];
         continue;
       }
       if (_.difference(role.bodyParts, creep.bodyParts).length) {
         creep.memory.role = role.name;
-        delete idleCreeps[creepName];
+        creep.memory.idleTime = 0;
+        delete Game.spawns.Spawn1.memory.idleCreeps[creepName];
         console.log('Assigning ' + creepName + ' to role ' + role.name);
         Game.spawns.Spawn1.memory.idleCreeps = idleCreeps;
         return creep;
       }
     }
-    Game.spawns.Spawn1.memory.idleCreeps = idleCreeps;
     return this.createCreep(role);
   }
 };

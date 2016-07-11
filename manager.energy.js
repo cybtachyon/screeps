@@ -8,8 +8,12 @@ var energyManager = {
     ];
   },
 
-  requestEnergy: function(creep) {
-
+  requestEnergy: function(creep, amount) {
+    // @TODO: Need to have a request queue with weight and type.
+    // Things like renewals and spawns come first before builds etc.
+    return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: ''
+    });
   },
 
   /** @param {Room} room **/

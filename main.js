@@ -1,3 +1,5 @@
+require('Creep');
+
 var creepsManager = require('manager.creeps');
 var towersManager = require('manager.towers');
 

@@ -7,61 +7,52 @@ var roleBuilder = {
       return 0;
     }
     else {
-      var sitesCount = room.find(FIND_CONSTRUCTION_SITES).length;
-      return Math.round((room.energyAvailable / 50) * sitesCount);
+      var sites_count = room.find(FIND_CONSTRUCTION_SITES).length;
+      return Math.round(Math.sqrt((room.energyAvailable / CARRY_CAPACITY) * sites_count));
     }
   },
 
   /** @param {Creep} creep **/
   run: function (creep) {
-
-    if (creep.memory.state == states.STATE_BUILDING && creep.carry.energy < 1) {
-      creep.memory.state = states.STATE_IDLE;
-    }
-    if (creep.memory.state != states.STATE_BUILDING && creep.carry.energy == creep.carryCapacity) {
-      creep.memory.state = states.STATE_BUILDING;
-    }
-
-    if (creep.memory.state == states.STATE_BUILDING) {
-      var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-      if (targets.length) {
-        if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(targets[0]);
+    var state = creep.memory.state;
+    switch (state) {
+      case states.STATE_BUILDING:
+        var target = Game.getObjectById(creep.memory.target);
+        if (!(target instanceof ConstructionSite)) {
+          creep.memory.state = states.STATE_IDLE;
+          break;
         }
-        creep.memory.state = states.STATE_BUILDING;
-      }
-      else {
-        creep.memory.state = states.STATE_IDLE;
-      }
-    }
-    else {
-      var sources = creep.room.find(
-        FIND_MY_STRUCTURES,
-        {
-          filter: (structure) => {
-            return (structure.structureType == STRUCTURE_EXTENSION ||
-              structure.structureType == STRUCTURE_SPAWN)
-              && structure.energy > creep.carryCapacity;
+        if (creep.carry.energy < 1) {
+          var build_cost = CONSTRUCTION_COST[target.structureType];
+          var build_percentage = target.progress / target.progressTotal;
+          var remaining_build_energy = build_cost * build_percentage;
+          var energy_amount = Math.min(remaining_build_energy, creep.carryCapacity);
+          var transfer = creep.receiveEnergy(energy_amount);
+          if (!transfer) {
+            creep.memory.state = states.STATE_IDLE;
+            break;
           }
         }
-      );
-      // @TODO Make transferring a request so it can be denied if saving.
-      if (sources.length > 0) {
-        var transfer = null;
-        if (sources[0].structureType == STRUCTURE_SPAWN ||
-          sources[0].structureType == STRUCTURE_EXTENSION) {
-          transfer = sources[0].transferEnergy(creep, creep.carryCapacity - creep.carry.energy);
-        }
         else {
-          transfer = sources[0].transfer(creep, 'energy', creep.carryCapacity - creep.carry.energy)
+          var build_status = creep.build(target);
+          if (build_status == ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
+          }
+          else if (build_status != OK) {
+            console.log('Build error: ' + build_status);
+            creep.memory.state = states.STATE_IDLE;
+            break;
+          }
         }
-        if (transfer == ERR_NOT_IN_RANGE) {
-          creep.moveTo(sources[0]);
+        break;
+
+      default:
+        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+        if (targets.length) {
+          creep.memory.target = targets[0].id;
+          creep.memory.state = states.STATE_BUILDING;
         }
-      }
-      else {
-        creep.memory.state = states.STATE_IDLE;
-      }
+        break;
     }
   }
 };
