@@ -8,11 +8,12 @@ var energyManager = {
     ];
   },
 
-  requestEnergy: function(creep, amount) {
+  requestEnergySource: function(creep, amount) {
+    // @TODO Make transferring a request so it can be denied if saving.
     // @TODO: Need to have a request queue with weight and type.
     // Things like renewals and spawns come first before builds etc.
-    return creep.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: ''
+    return creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+      filter: (structure) => structure.structureType == STRUCTURE_SPAWN
     });
   },
 
