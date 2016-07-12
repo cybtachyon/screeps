@@ -11,42 +11,88 @@ var roleHarvester = {
     return 0;
   },
 
-  /** @param {Creep} creep **/
+  /**
+   * Starts the harvesting process.
+   *
+   * @param creep
+   */
+  startHarvesting: function (creep) {
+    var source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+    if (source) {
+      creep.memory.target = source.id;
+      creep.memory.state = states.STATE_HARVESTING;
+      return;
+    }
+    creep.memory.state = states.STATE_IDLE;
+  },
+
+  /**
+   * Starts the drop off process.
+   *
+   * @param creep
+   */
+  startTransporting: function (creep) {
+    var target = energyManager.getOpenStorage(creep.room);
+    if (target) {
+      creep.memory.target = target.id;
+      creep.memory.state = states.STATE_TRANSPORTING;
+      return;
+    }
+    creep.memory.state = states.STATE_IDLE;
+  },
+
+  /**
+   * Runs the role for the given creep.
+   *
+   * @param {Creep} creep
+   */
   run: function (creep) {
     var state = creep.memory.state;
-    // Set default state.
-    if (!state) {
-      state = states.STATE_HARVESTING;
+    var target = Game.getObjectById(creep.memory.target);
+    if (!target) {
+      creep.memory.state = states.STATE_IDLE;
     }
-    else if (creep.carry.energy < 1) {
-      state = states.STATE_HARVESTING;
-    }
-    // Handle harvesting.
-    if (state == states.STATE_HARVESTING && creep.carry.energy < creep.carryCapacity) {
-      var source = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-      if (source) {
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(source);
+
+    switch (state) {
+      case states.STATE_HARVESTING:
+        if (creep.carry.energy == creep.carryCapacity) {
+          this.startTransporting(creep);
+          break;
         }
-      }
-    }
-    // Handle transporting.
-    else {
-      state = states.STATE_TRANSPORTING;
-      var target = energyManager.getOpenStorage(creep.room);
-      if (target) {
-        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
         }
+        break;
+
+      case states.STATE_TRANSPORTING:
         if (creep.carry.energy < 1) {
-          creep.memory.state = states.STATE_HARVESTING;
+          this.startHarvesting(creep);
+          break;
         }
-      }
-      else {
-        state = states.STATE_IDLE;
-      }
+        if (energyManager.getEnergy(target) == energyManager.getEnergyCapacity(target)) {
+          console.log('Harvester transport target ' + target + ' is full');
+          this.startTransporting(creep);
+          break;
+        }
+        var transfer = creep.transfer(target, RESOURCE_ENERGY);
+        if (transfer == ERR_NOT_IN_RANGE) {
+          creep.moveTo(target);
+          break;
+        }
+        else if (transfer != OK) {
+          console.log('Error ' + transfer  + ' transporting energy to ' + target);
+          creep.memory.state = states.STATE_IDLE;
+        }
+        break;
+
+      default:
+        if (creep.carry.energy > creep.carryCapacity * 0.6) {
+          this.startTransporting(creep);
+          break;
+        }
+        this.startHarvesting(creep);
+        break;
     }
-    creep.memory.state = state;
   }
 };
 
