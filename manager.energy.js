@@ -1,4 +1,45 @@
 var energyManager = {
+  run: function() {
+    if (!Memory.energy) {
+      Memory.energy = {
+        storage: 0,
+        storageLastTick: 0,
+        capacity: 0,
+        reserved: 0,
+        avgPerTick: 0,
+        ticks: []
+      };
+    }
+    Memory.energy.storageLastTick = Memory.energy.storage;
+    Memory.energy.storage = 0;
+    Memory.energy.capacity = 0;
+    for (var room_name in Game.rooms) {
+      if (!Game.rooms.hasOwnProperty(room_name)) {
+        continue;
+      }
+      Memory.energy.storage += Game.rooms[room_name].energyAvailable;
+      Memory.energy.capacity += Game.rooms[room_name].energyCapacityAvailable;
+    }
+    Memory.energy.ticks.push(Memory.energy.storage - Memory.energy.storageLastTick);
+    if (Memory.energy.ticks.length > 60) {
+      Memory.energy.ticks.shift();
+    }
+    Memory.energy.avgPerTick = Memory.energy.ticks.reduce(
+      function(previous_value, current_value, index, map_array) {
+        if (index + 1 == map_array.length) {
+          return (previous_value + current_value) / map_array.length;
+        }
+        return previous_value + current_value;
+      }
+    );
+
+  },
+
+  /**
+   * Returns the structure priorities for storing energy.
+   *
+   * @returns {*[]}
+   */
   getStoragePriorities: function() {
     return [
       STRUCTURE_SPAWN,
@@ -8,6 +49,13 @@ var energyManager = {
     ];
   },
 
+  /**
+   * Requests a structure to provide the required amount of energy.
+   *
+   * @param creep
+   * @param amount
+   * @returns {OwnedStructure}
+   */
   requestEnergySource: function(creep, amount) {
     // @TODO Make transferring a request so it can be denied if saving.
     // @TODO: Need to have a request queue with weight and type.
@@ -73,8 +121,13 @@ var energyManager = {
     }
     return 0;
   },
-  
-  /** @param {Room} room **/
+
+  /**
+   * Returns a prioritized structure that has room for energy.
+   *
+   * @param {Room} room
+   * @returns {*|T}
+   */
   getOpenStorage: function(room) {
     var storagePriorities = this.getStoragePriorities();
     var structures = room.find(FIND_STRUCTURES);
@@ -91,7 +144,12 @@ var energyManager = {
     }
   },
 
-  /** @param {Room} room **/
+  /**
+   * Returns a prioritized structure that has energy to give.
+   *
+   * @param {Room} room
+   * @returns {*|T}
+   */
   getPickupStorage: function(room) {
     var storagePriorities = this.getStoragePriorities().reverse();
     var structures = room.find(FIND_STRUCTURES);

@@ -3,6 +3,7 @@ require('RoomPosition');
 require('Source');
 
 var creepsManager = require('manager.creeps');
+var energyManager = require('manager.energy');
 var towersManager = require('manager.towers');
 
 module.exports.loop = function () {
@@ -26,6 +27,7 @@ module.exports.loop = function () {
     }
   }
 
+  energyManager.run();
   towersManager.run();
   creepsManager.run(Game.creeps);
 
@@ -42,7 +44,8 @@ module.exports.loop = function () {
         return (previous_value + current_value) / map_array.length;
       }
       return previous_value + current_value;
-    }, 0);
+    }
+  );
   var game_tick_ms = loop_end - new Date(Memory.stats.gameLastTs);
   Memory.stats.gameLastTicks.push(game_tick_ms);
   if (Memory.stats.gameLastTicks.length > 5) {
@@ -54,6 +57,7 @@ module.exports.loop = function () {
         return (previous_value + current_value) / map_array.length;
       }
       return previous_value + current_value;
-    }, 0);
+    }
+  );
   Memory.stats.gameLastTs = loop_end;
 };
