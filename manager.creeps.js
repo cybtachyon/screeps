@@ -98,6 +98,7 @@ var creepsManager = {
           creep.memory.idleTime++;
           if (creep.memory.idleTime >= 15) {
             Game.spawns.Spawn1.memory.idleCreeps[creep.name] = 0;
+            creep.memory.role = 'builder';
             if (creep.memory.idleTime > 300) {
               creep.memory.role = 'recycler';
             }
