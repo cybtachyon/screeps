@@ -1,21 +1,28 @@
 var states = require('constants.states');
 
 var roleUpgrader = {
-  /** @param {Room} room **/
+  /**
+   * Returns the room creep limit for the role.
+   *
+   * @param {Room} room
+   * @returns {number}
+   */
   getRoomLimit: function (room) {
     if (room.energyAvailable < CARRY_CAPACITY) {
       return 0;
     }
     else {
-      // @TODO: Something less stupid about idlers.
-      var idleCreepCount = Object.keys(Game.spawns.Spawn1.memory.idleCreeps).length;
       var roleCreeps = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-      var numUpgraders = roleCreeps.length;
-      return Math.floor((room.energyAvailable) / (CARRY_CAPACITY * numUpgraders + 1));
+      var num_upgraders = roleCreeps.length;
+      return Math.floor((room.energyAvailable) / (CARRY_CAPACITY * num_upgraders + 1)) + 1;
     }
   },
 
-  /** @param {Creep} creep **/
+  /**
+   * Runs the role for the provided creep.
+   *
+   * @param {Creep} creep
+   */
   run: function (creep) {
     // @TODO: Refactor to use switch case for cleaner code.
 
