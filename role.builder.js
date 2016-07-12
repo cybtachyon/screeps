@@ -8,7 +8,7 @@ var roleBuilder = {
     }
     else {
       var sites_count = room.find(FIND_CONSTRUCTION_SITES).length;
-      return Math.round(Math.sqrt((room.energyAvailable / CARRY_CAPACITY) * sites_count));
+      return Math.floor(Math.sqrt((room.energyAvailable / CARRY_CAPACITY) * sites_count));
     }
   },
 
