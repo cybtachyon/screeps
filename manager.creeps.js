@@ -73,6 +73,7 @@ var creepsManager = {
       if (role.name == 'harvester' && roleCreeps.length < 1) {
         console.log('Emergency: no harvesters available!');
         Memory.emergency = true;
+        this.makeCreepRole(role);
       }
       else {
         Memory.emergency = false;
