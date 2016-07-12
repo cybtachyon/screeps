@@ -40,13 +40,13 @@ var energyManager = {
    *   Energy amount.
    */
   getEnergy: function(target) {
-    if (target.hasOwnProperty('energy')) {
+    if (typeof target.energy === 'number') {
       return target.energy;
     }
-    else if (target.hasOwnProperty('store')) {
+    else if (typeof target.store === 'object') {
       return target.store[RESOURCE_ENERGY];
     }
-    else if (target.hasOwnProperty('carry')) {
+    else if (typeof target.carry === 'object') {
       return target.carry[RESOURCE_ENERGY];
     }
     return 0;
@@ -62,13 +62,13 @@ var energyManager = {
    *   Energy amount.
    */
   getEnergyCapacity: function(target) {
-    if (target.hasOwnProperty('energyCapacity')) {
+    if (typeof target.energyCapacity === 'number') {
       return target.energyCapacity;
     }
-    else if (target.hasOwnProperty('storeCapacity')) {
+    else if (typeof target.storeCapacity === 'number') {
       return target.storeCapacity;
     }
-    else if (target.hasOwnProperty('carryCapacity')) {
+    else if (typeof target.carryCapacity === 'number') {
       return target.carryCapacity;
     }
     return 0;
