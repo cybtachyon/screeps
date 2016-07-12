@@ -1,4 +1,6 @@
 var towersManager = {
+  // @TODO: Revisit hardcoded percentages here.
+
   getLowEnergyTowers: function() {
     var towers = [];
     for (var room_name in Game.rooms) {
@@ -8,7 +10,7 @@ var towersManager = {
       var room = Game.rooms[room_name];
       towers = towers.concat(room.find(FIND_MY_STRUCTURES, {
         filter: (structure) => structure.structureType == STRUCTURE_TOWER
-          && structure.energy < structure.energyCapacity * 0.2
+          && structure.energy < structure.energyCapacity * 0.7
       }));
     }
     return towers;
@@ -28,9 +30,11 @@ var towersManager = {
         var tower = towers[towerDelta];
         if (tower) {
 
-          if (tower.energy > 100) {
-            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-              filter: (structure) => structure.hits < structure.hitsMax
+          if (tower.energy > tower.energyCapacity * 0.35) {
+            var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+              filter: (structure) => (structure.hits < structure.hitsMax && structure.my)
+                || (structure.hits < structure.hitsMax * 0.003
+                  && structure.structureType == STRUCTURE_WALL)
             });
             if (closestDamagedStructure) {
               var action = tower.repair(closestDamagedStructure);
