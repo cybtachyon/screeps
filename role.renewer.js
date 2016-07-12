@@ -9,7 +9,7 @@ var roleRenewer = {
   /** @param {Creep} creep **/
   run: function (creep) {
 
-    if (creep.ticksToLive > 1000) {
+    if (creep.ticksToLive > 900) {
       creep.memory.state = states.STATE_IDLE;
     }
     else {
