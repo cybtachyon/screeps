@@ -11,7 +11,7 @@ var roleUpgrader = {
       var idleCreepCount = Object.keys(Game.spawns.Spawn1.memory.idleCreeps).length;
       var roleCreeps = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
       var numUpgraders = roleCreeps.length;
-      return Math.floor((room.energyAvailable) / (CARRY_CAPACITY * numUpgraders + 1)) + idleCreepCount;
+      return Math.floor((room.energyAvailable) / (CARRY_CAPACITY * numUpgraders + 1));
     }
   },
 
