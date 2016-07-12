@@ -51,6 +51,28 @@ var energyManager = {
     }
     return 0;
   },
+
+  /**
+   * Returns the energy count inside the target.
+   *
+   * @param {Object} target
+   *   The target to get the energy amount from.
+   *
+   * @return int
+   *   Energy amount.
+   */
+  getEnergyCapacity: function(target) {
+    if (target.hasOwnProperty('energyCapacity')) {
+      return target.energyCapacity;
+    }
+    else if (target.hasOwnProperty('storeCapacity')) {
+      return target.storeCapacity;
+    }
+    else if (target.hasOwnProperty('carryCapacity')) {
+      return target.carryCapacity;
+    }
+    return 0;
+  },
   
   /** @param {Room} room **/
   getOpenStorage: function(room) {
