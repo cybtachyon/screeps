@@ -6,7 +6,6 @@ module.exports = {
   STATE_RECYCLING: 'recycling',
   STATE_RENEWING: 'renewing',
   STATE_REPAIRING: 'repairing',
-  STATE_TRANSPORTING: 'transporting',
   STATE_UNLOADING: 'unloading',
   STATE_UPGRADING: 'upgrading'
 };

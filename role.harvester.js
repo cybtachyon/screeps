@@ -31,11 +31,11 @@ var roleHarvester = {
    *
    * @param creep
    */
-  startTransporting: function (creep) {
+  startUnloading: function (creep) {
     var target = energyManager.getOpenStorage(creep.room);
     if (target) {
       creep.memory.target = target.id;
-      creep.memory.state = states.STATE_TRANSPORTING;
+      creep.memory.state = states.STATE_UNLOADING;
       return;
     }
     creep.memory.state = states.STATE_IDLE;
@@ -56,7 +56,7 @@ var roleHarvester = {
     switch (state) {
       case states.STATE_HARVESTING:
         if (creep.carry.energy == creep.carryCapacity) {
-          this.startTransporting(creep);
+          this.startUnloading(creep);
           break;
         }
         if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
@@ -64,14 +64,14 @@ var roleHarvester = {
         }
         break;
 
-      case states.STATE_TRANSPORTING:
+      case states.STATE_UNLOADING:
         if (creep.carry.energy < 1) {
           this.startHarvesting(creep);
           break;
         }
         if (energyManager.getEnergy(target) == energyManager.getEnergyCapacity(target)) {
-          console.log(Game.time + ' Harvester transport target ' + target + ' is full');
-          this.startTransporting(creep);
+          console.log(Game.time + ' Harvester unload target ' + target + ' is full');
+          this.startUnloading(creep);
           break;
         }
         var transfer = creep.transfer(target, RESOURCE_ENERGY);
@@ -80,14 +80,14 @@ var roleHarvester = {
           break;
         }
         else if (transfer != OK) {
-          console.log(Game.time + ' Error ' + transfer  + ' transporting energy to ' + target);
+          console.log(Game.time + ' Error: ' + transfer  + ' unloading energy to ' + target);
           creep.memory.state = states.STATE_IDLE;
         }
         break;
 
       default:
         if (creep.carry.energy > creep.carryCapacity * 0.6) {
-          this.startTransporting(creep);
+          this.startUnloading(creep);
           break;
         }
         this.startHarvesting(creep);
