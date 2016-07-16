@@ -4,9 +4,12 @@ var energyManager = require('manager.energy');
 var roleHarvester = {
   /** @param {Room} room **/
   getRoomLimit: function (room) {
-    var sources = room.find(FIND_SOURCES_ACTIVE);
-    if (sources.length) {
-      return sources[sources.length - 1].getOpenTerrainCount();
+    var spawns = room.find(FIND_MY_SPAWNS);
+    for (var spawn_delta = 0; spawn_delta < spawns.length; spawn_delta++) {
+      var source = spawns[spawn_delta].pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+      if (source) {
+        return source.getOpenTerrainCount();
+      }
     }
     return 0;
   },
@@ -21,6 +24,7 @@ var roleHarvester = {
     if (source) {
       creep.memory.target = source.id;
       creep.memory.state = states.STATE_HARVESTING;
+      this.run(creep);
       return;
     }
     creep.memory.state = states.STATE_IDLE;
@@ -36,6 +40,7 @@ var roleHarvester = {
     if (target) {
       creep.memory.target = target.id;
       creep.memory.state = states.STATE_UNLOADING;
+      this.run(creep);
       return;
     }
     creep.memory.state = states.STATE_IDLE;
