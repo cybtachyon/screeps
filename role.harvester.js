@@ -6,7 +6,7 @@ var roleHarvester = {
   getRoomLimit: function (room) {
     var sources = room.find(FIND_SOURCES_ACTIVE);
     if (sources.length) {
-      return sources[0].getOpenTerrainCount();
+      return sources[sources.length - 1].getOpenTerrainCount();
     }
     return 0;
   },
