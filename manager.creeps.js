@@ -66,18 +66,25 @@ var creepsManager = {
     for (var roleDelta = 0; roleDelta < roles.length; roleDelta++) {
       var role = roles[roleDelta];
       // Ensure enough creeps are spawned.
-      var roleCreeps = _.filter(creeps, (creep) => creep.memory.role == role.name);
+      var roleCreeps = _.filter(creeps,
+        (creep) => creep.memory.role == role.name
+          && !creep.spawning
+      );
+
       // Special case to pause managing if no harvesters are present.
       // This mostly handles new rooms & spawns.
       // @TODO Revisit for rooms with no harvesting nodes.
-      if (role.name == 'harvester' && roleCreeps.length < 1) {
         console.log('Emergency: no harvesters available!');
-        Memory.emergency = true;
-        this.makeCreepRole(role);
+      if (role.name == 'harvester') {
+        if (roleCreeps.length < 1) {
+          Memory.emergency = true;
+          this.makeCreepRole(role);
+        }
+        else {
+          Memory.emergency = false;
+        }
       }
-      else {
-        Memory.emergency = false;
-      }
+
       // Create new creeps if roles are not filled.
       if (!Memory.emergency && roleCreeps.length < role.class.getRoomLimit(room)) {
         this.makeCreepRole(role);
