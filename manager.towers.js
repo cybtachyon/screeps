@@ -38,7 +38,7 @@ var towersManager = {
             });
             if (closestDamagedStructure) {
               var action = tower.repair(closestDamagedStructure);
-              console.log('Tower ' + tower.id + ' is repairing ' + closestDamagedStructure + ': ' + action);
+              console.log(Game.time + ' Tower ' + tower.id + ' is repairing ' + closestDamagedStructure + ': ' + action);
             }
           }
 

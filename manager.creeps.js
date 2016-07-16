@@ -74,9 +74,9 @@ var creepsManager = {
       // Special case to pause managing if no harvesters are present.
       // This mostly handles new rooms & spawns.
       // @TODO Revisit for rooms with no harvesting nodes.
-        console.log('Emergency: no harvesters available!');
       if (role.name == 'harvester') {
         if (roleCreeps.length < 1) {
+          console.log(Game.time + ' Emergency: no harvesters available!');
           Memory.emergency = true;
           this.makeCreepRole(role);
         }
@@ -95,7 +95,7 @@ var creepsManager = {
         var creep = roleCreeps[creepDelta];
         if (creep.ticksToLive < 50 && creep.memory.role != 'renewer') {
           creep.memory.role = 'renewer';
-          console.log('Creep ' + creep.name + ' needs to be renewed.');
+          console.log(Game.time + ' Creep ' + creep.name + ' needs to be renewed.');
           continue;
         }
         role.class.run(creep);
@@ -123,7 +123,7 @@ var creepsManager = {
   /** @param {Object} role **/
   createCreep: function(role) {
     if (!Game.spawns.Spawn1.spawning && Game.spawns.Spawn1.canCreateCreep(role.bodyParts) == OK) {
-      console.log('Creating new ' + role.name);
+      console.log(Game.time + ' Creating new ' + role.name);
       return Game.spawns.Spawn1.createCreep(
         role.bodyParts,
         undefined,
@@ -149,7 +149,7 @@ var creepsManager = {
         creep.memory.role = role.name;
         creep.memory.idleTime = 0;
         delete Game.spawns.Spawn1.memory.idleCreeps[creepName];
-        console.log('Assigning ' + creepName + ' to role ' + role.name);
+        console.log(Game.time + ' Assigning ' + creepName + ' to role ' + role.name);
         Game.spawns.Spawn1.memory.idleCreeps = idleCreeps;
         return creep;
       }

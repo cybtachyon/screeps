@@ -56,7 +56,7 @@ var roleHauler = {
           transfer = target.transfer(creep, RESOURCE_ENERGY);
         }
         else {
-          console.log('Error: Unable to transfer energy from a ' + target);
+          console.log(Game.time + ' Error: Unable to transfer energy from a ' + target);
         }
         // Find out remaining energy.
         var remainingEnergy = 0;
@@ -101,7 +101,7 @@ var roleHauler = {
         creep.memory.target = null;
         var source = this.getSource(creep.room);
         if (source) {
-          console.log('Hauler ' + creep.name + ' found source ' + source);
+          console.log(Game.time + ' Hauler ' + creep.name + ' found source ' + source);
           creep.memory.target = source.id;
           creep.memory.state = states.STATE_LOADING;
         }

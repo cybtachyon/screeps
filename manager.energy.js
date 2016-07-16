@@ -71,7 +71,7 @@ var energyManager = {
       return source.transfer(destination, RESOURCE_ENERGY);
     }
     else {
-      console.log('Error: Unable to transfer energy from ' + source + ' to ' + destination);
+      console.log(Game.time + ' Error: Unable to transfer energy from ' + source + ' to ' + destination);
       return ERR_INVALID_TARGET;
     }
   },

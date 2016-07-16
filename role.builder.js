@@ -39,7 +39,7 @@ var roleBuilder = {
             creep.moveTo(target);
           }
           else if (build_status != OK) {
-            console.log('Build error: ' + build_status);
+            console.log(Game.time + ' Build error: ' + build_status);
             if (creep.dismantle(target) != OK) {
               creep.memory.state = states.STATE_IDLE;
             }

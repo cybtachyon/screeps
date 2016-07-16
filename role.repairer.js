@@ -100,7 +100,7 @@ var roleRepairer = {
         }
         var source = energyManager.requestEnergySource(creep);
         if (source) {
-          console.log('Repairer ' + creep.name + ' found source ' + source.structureType);
+          console.log(Game.time + ' Repairer ' + creep.name + ' found source ' + source.structureType);
           creep.memory.target = source.id;
           creep.memory.state = states.STATE_LOADING;
         }

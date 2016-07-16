@@ -70,7 +70,7 @@ var roleHarvester = {
           break;
         }
         if (energyManager.getEnergy(target) == energyManager.getEnergyCapacity(target)) {
-          console.log('Harvester transport target ' + target + ' is full');
+          console.log(Game.time + ' Harvester transport target ' + target + ' is full');
           this.startTransporting(creep);
           break;
         }
@@ -80,7 +80,7 @@ var roleHarvester = {
           break;
         }
         else if (transfer != OK) {
-          console.log('Error ' + transfer  + ' transporting energy to ' + target);
+          console.log(Game.time + ' Error ' + transfer  + ' transporting energy to ' + target);
           creep.memory.state = states.STATE_IDLE;
         }
         break;
